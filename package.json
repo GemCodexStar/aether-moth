@@ -1,0 +1,16 @@
+{
+  "name": "aether-moth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive clockwork moth in a steampunk astrolabe observatory · Three.js / WebGL",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/aether/main.js --bundle --format=iife --target=chrome100 --outfile=aether.js --legal-comments=none"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

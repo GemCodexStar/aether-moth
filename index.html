@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080604" />
+    <meta
+      name="description"
+      content="以太飞蛾 · 第七号自动机。黄铜骨架、琥珀翼膜与实时挥翅的 Three.js 蒸汽朋克互动场景。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AETHER MOTH · 以太飞蛾" />
+    <meta property="og:description" content="蒸汽朋克天文钟观测厅中的互动机械飞蛾 · Three.js / WebGL" />
+    <meta property="og:image" content="https://gemcodexstar.github.io/aether-moth/preview.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>AETHER MOTH · 以太飞蛾 / 机械自然志</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cinzel:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./aether.css?v=5" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0704'/%3E%3Ccircle cx='32' cy='32' r='16' fill='none' stroke='%23c89c5d' stroke-width='2'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%23e7a95f'/%3E%3Cpath d='M32 10v10M32 44v10M10 32h10M44 32h10M16 16l7 7M41 41l7 7M48 16l-7 7M23 41l-7 7' stroke='%23c89c5d' stroke-width='2'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <div class="app is-booting" id="app">
+      <canvas
+        class="scene-canvas"
+        id="aether-canvas"
+        aria-label="以太飞蛾第七号自动机三维场景，可拖拽环绕并点击飞蛾触发振翅"
+      ></canvas>
+
+      <div class="scene-vignette" aria-hidden="true"></div>
+      <div class="scene-grade" aria-hidden="true"></div>
+      <div class="film-grain" aria-hidden="true"></div>
+
+      <div class="frame" aria-hidden="true">
+        <span class="frame-corner frame-corner--tl"></span>
+        <span class="frame-corner frame-corner--tr"></span>
+        <span class="frame-corner frame-corner--bl"></span>
+        <span class="frame-corner frame-corner--br"></span>
+        <span class="frame-notch frame-notch--top"></span>
+        <span class="frame-notch frame-notch--bottom"></span>
+      </div>
+
+      <header class="masthead">
+        <div class="brand">
+          <svg class="brand-seal" viewBox="0 0 44 44" aria-hidden="true">
+            <circle cx="22" cy="22" r="17.5" />
+            <circle cx="22" cy="22" r="12" />
+            <circle cx="22" cy="22" r="3.8" class="brand-seal-core" />
+            <path d="M22 2.5v7M22 34.5v7M2.5 22h7M34.5 22h7M8.2 8.2l4.9 4.9M30.9 30.9l4.9 4.9M35.8 8.2l-4.9 4.9M13.1 30.9l-4.9 4.9" />
+          </svg>
+          <div class="brand-copy">
+            <span class="brand-name">THE AETHER WORKS</span>
+            <span class="brand-sub">Mechanical Natural History · London</span>
+          </div>
+        </div>
+
+        <div class="plate-mark">
+          <span class="plate-line"></span>
+          <div class="plate-copy">
+            <span>SPECIMEN PLATE</span>
+            <strong>No. VII</strong>
+          </div>
+          <span class="plate-line"></span>
+        </div>
+
+        <div class="masthead-meta">
+          <span class="masthead-year">MDCCCLXXXVII</span>
+          <span class="live-status"><i></i> APPARATUS LIVE</span>
+        </div>
+      </header>
+
+      <span class="side-inscription" aria-hidden="true">
+        OBSERVATORY APPARATUS · CALIBRATED FOR THE QUIET HOURS · No. 07
+      </span>
+
+      <aside class="telemetry" aria-label="实时飞行遥测">
+        <div class="telemetry-head">
+          <span>FLIGHT TELEMETRY</span>
+          <span class="telemetry-live"><i></i> LIVE</span>
+        </div>
+
+        <div class="beat-readout">
+          <span class="micro-label">WINGBEAT / 振翅频率</span>
+          <div class="beat-value">
+            <b id="beatValue">0.72</b>
+            <span>HZ</span>
+          </div>
+          <div class="beat-wave" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+
+        <div class="telemetry-divider">
+          <span></span><i></i><span></span>
+        </div>
+
+        <div class="meter-block">
+          <div class="meter-head">
+            <span>AETHER PRESSURE / 以太压力</span>
+            <span class="meter-value" id="pressureValue">58<small>%</small></span>
+          </div>
+          <div class="meter-track"><i id="meterFill"></i></div>
+          <div class="meter-scale" aria-hidden="true">
+            <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+          </div>
+        </div>
+
+        <dl class="telemetry-list">
+          <div>
+            <dt>CORE TEMPERATURE</dt>
+            <dd id="tempValue">65.0<small>°C</small></dd>
+          </div>
+          <div>
+            <dt>GEAR TRAIN</dt>
+            <dd>48<small>:</small>17</dd>
+          </div>
+          <div>
+            <dt>WING MEMBRANE</dt>
+            <dd class="material-value">AMBER / MICA</dd>
+          </div>
+        </dl>
+
+        <div class="telemetry-foot">
+          <span class="state-pill"><i></i><span id="stateText">STEADY HOVER</span></span>
+          <span class="stir-tally"><b id="stirCount">00</b> STIRS</span>
+        </div>
+      </aside>
+
+      <section class="hero" aria-labelledby="heroTitle">
+        <div class="hero-kicker">
+          <span class="hero-number">VII</span>
+          <span class="hero-kicker-line"></span>
+          <span>CLOCKWORK LEPIDOPTERA</span>
+        </div>
+        <h1 id="heroTitle"><span>AETHER</span><em>MOTH</em></h1>
+        <div class="hero-cn">以 太 飞 蛾 <span>·</span> 第 七 号 自 动 机</div>
+        <p class="hero-desc">
+          以黄铜为骨，云母为翼。钟表匠为它留下一枚以太心脏，<br />
+          好让它在无人造访的夜里，仍然记得怎样振翅。
+        </p>
+        <div class="hero-specs">
+          <span><small>翼展</small>4.8 M</span>
+          <span><small>质量</small>2.6 KG</span>
+          <span><small>编号</small>NO. VII</span>
+        </div>
+      </section>
+
+      <div class="specimen-cue" id="specimenCue">
+        <span class="cue-orbit" aria-hidden="true"><i></i></span>
+        <div class="cue-copy">
+          <b>轻触标本 · 唤醒双翼</b>
+          <small>CLICK THE SPECIMEN TO STIR THE WINGS</small>
+        </div>
+      </div>
+
+      <div class="control-dock">
+        <div class="control-caption">
+          <span>APPARATUS CONTROL</span>
+          <span>MECHANISM / W.O.L. · REV. V</span>
+        </div>
+        <div class="control-row">
+          <button class="control-button control-button--primary" id="beatButton" type="button" aria-label="触发一次强力振翅">
+            <span class="control-icon">
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M27.2 6.4c-6.6 0-12.4 2.7-15.6 7.2-1.4 2-2 4.3-1.8 6.5 1.2-2.4 3.2-4.3 5.8-5.4-2 1.9-3.4 4.2-4 7 4.4.9 8.7-1.1 11.2-4.4 2.8-3.7 3.8-7.6 4.4-10.9Z" />
+                <path d="M8.2 22.7c-.2 1.2-.1 2.4.3 3.4M5 13.8c-1.1.8-2 1.8-2.6 3M14.6 4.8c-.2-1-.7-1.9-1.4-2.6" />
+              </svg>
+            </span>
+            <span class="control-copy"><b>振翅</b><small>WINGBEAT</small></span>
+            <kbd>W</kbd>
+          </button>
+
+          <button class="control-button" id="orbitButton" type="button" aria-label="开启或关闭自动环绕视角" aria-pressed="false">
+            <span class="control-icon">
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <ellipse cx="16" cy="16" rx="11" ry="5.4" />
+                <path d="M7.2 13.1 4.8 17l4.6 1.4M24.8 18.9l2.4-3.9-4.6-1.4" />
+                <circle cx="16" cy="16" r="2.1" class="control-dot" />
+              </svg>
+            </span>
+            <span class="control-copy"><b>环绕</b><small>ORBIT</small></span>
+            <kbd>O</kbd>
+          </button>
+
+          <button class="control-button" id="lampButton" type="button" aria-label="开关提灯氛围光" aria-pressed="true">
+            <span class="control-icon">
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <path d="M12 10h8M12.8 26h6.4M11 26h10M10.5 10c0-3 2.4-5.4 5.5-5.4s5.5 2.4 5.5 5.4M9 11.2h14l-1.3 9.3H10.3L9 11.2Z" />
+                <path d="M16 15.2v3.2M13.6 16.8h4.8" />
+              </svg>
+            </span>
+            <span class="control-copy"><b>灯火</b><small>LANTERN</small></span>
+            <kbd>L</kbd>
+          </button>
+        </div>
+      </div>
+
+      <div class="stage-note" aria-hidden="true">
+        <span>DRAG TO ORBIT</span>
+        <i></i>
+        <span>SCROLL TO APPROACH</span>
+      </div>
+
+      <div class="loader" id="loader" role="status" aria-live="polite">
+        <div class="loader-inner">
+          <svg class="loader-gear" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="22" />
+            <circle cx="32" cy="32" r="7" />
+            <path d="M32 4v8M32 52v8M4 32h8M52 32h8M12.2 12.2l5.7 5.7M46.1 46.1l5.7 5.7M51.8 12.2l-5.7 5.7M17.9 46.1l-5.7 5.7" />
+          </svg>
+          <span class="loader-kicker">THE AETHER WORKS</span>
+          <h2>CALIBRATING <em>No. 07</em></h2>
+          <p>WINDING BRASS · POURING AMBER GLASS · LIGHTING THE CORE</p>
+          <div class="loader-track"><i id="loaderBar"></i></div>
+          <div class="loader-meta">
+            <span id="loaderStatus">PREPARING THE OBSERVATORY</span>
+            <b id="loaderPercent">00</b>
+          </div>
+        </div>
+        <span class="loader-corner loader-corner--tl"></span>
+        <span class="loader-corner loader-corner--tr"></span>
+        <span class="loader-corner loader-corner--bl"></span>
+        <span class="loader-corner loader-corner--br"></span>
+      </div>
+
+      <div class="recovery" id="recovery" role="status" aria-live="assertive" hidden>
+        <div class="recovery-inner">
+          <span class="recovery-kicker">RENDER PAUSED · 渲染暂时中断</span>
+          <h2>重新点燃<em>以太核心</em></h2>
+          <p>显示设备刚刚中断了三维绘卷，正在自动恢复。<br />若画面没有回来，轻按浏览器刷新即可。</p>
+          <span class="recovery-line" aria-hidden="true"><i></i></span>
+        </div>
+      </div>
+
+      <div class="webgl-error" id="webglError" hidden>
+        <span class="micro-label">APPARATUS OFFLINE</span>
+        <h2>未能点燃以太核心</h2>
+        <p>当前浏览器无法启动 WebGL 2 渲染。请使用支持硬件加速的现代浏览器再次打开。</p>
+      </div>
+    </div>
+
+    <script src="./aether.js?v=5" defer></script>
+  </body>
+</html>
